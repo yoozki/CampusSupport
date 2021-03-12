@@ -29,9 +29,9 @@ public class UserPassportController {
 
     private static String WECHAT_OPENID_API = "https://api.weixin.qq.com/sns/jscode2session";
 
-    private static String APP_ID = "";
+    private static String APP_ID = "wx624d6613af2b296f";
 
-    private static String APP_SECRET = "";
+    private static String APP_SECRET = "95f2059b264d0a4ef91682bc55ff4f1b";
 
     @Autowired
     private UserPassportService userPassportService;
@@ -61,6 +61,7 @@ public class UserPassportController {
         }
         String token = userPassportService.generateToken(userByOpenId);
         stringRedisTemplate.opsForValue().set(RedisKeyEnum.USER_TOKEN_KEY.getKeyName() + openId, token, 1, TimeUnit.DAYS);
+        System.out.println(token);
         return JSONResult.ok(token);
     }
 
@@ -79,6 +80,17 @@ public class UserPassportController {
         if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(RedisKeyEnum.USER_TOKEN_KEY.getKeyName() + openId))) {
             return JSONResult.errorMsg(ErrorCodeEnum.TOKEN_VERIFY_ERROR.getCode(), ErrorCodeEnum.TOKEN_VERIFY_ERROR.getMsg());
         }
+        return JSONResult.ok();
+    }
+
+    @DeleteMapping("/token")
+    public JSONResult logout(@RequestHeader("Authorization") String token) {
+        UserTokenDTO userTokenDTO = JwtUtils.parseSubject(token);
+        if (userTokenDTO == null) {
+            return JSONResult.errorMsg(ErrorCodeEnum.TOKEN_VERIFY_ERROR.getCode(), ErrorCodeEnum.TOKEN_VERIFY_ERROR.getMsg());
+        }
+        String openId = userTokenDTO.getOpenId();
+        stringRedisTemplate.delete(RedisKeyEnum.USER_TOKEN_KEY + openId);
         return JSONResult.ok();
     }
 

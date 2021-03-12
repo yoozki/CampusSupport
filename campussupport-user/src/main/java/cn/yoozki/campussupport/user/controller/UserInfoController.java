@@ -1,5 +1,6 @@
 package cn.yoozki.campussupport.user.controller;
 
+import cn.yoozki.campussupport.common.enums.ErrorCodeEnum;
 import cn.yoozki.campussupport.common.pojo.UserTokenDTO;
 import cn.yoozki.campussupport.common.util.JSONResult;
 import cn.yoozki.campussupport.common.util.JwtUtils;
@@ -19,9 +20,9 @@ public class UserInfoController {
 
     @GetMapping()
     public JSONResult getUserInfo(@RequestHeader("Authorization") String token) {
-        UserInfoVO userInfoVO = null;
-        try {
-            UserTokenDTO userTokenDTO = JwtUtils.parseSubject(token);
+        UserTokenDTO userTokenDTO = JwtUtils.parseSubject(token);
+        if (userTokenDTO != null) {
+            UserInfoVO userInfoVO = new UserInfoVO();
             String avatar = userTokenDTO.getAvatar();
             String nickName = userTokenDTO.getNickName();
             BigDecimal balance = userTokenDTO.getBalance();
@@ -29,10 +30,10 @@ public class UserInfoController {
             userInfoVO.setAvatar(avatar);
             userInfoVO.setBalance(balance);
             userInfoVO.setNickName(nickName);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            return JSONResult.ok(userInfoVO);
+        } else {
+            return JSONResult.errorMsg(ErrorCodeEnum.TOKEN_VERIFY_ERROR.getCode(), ErrorCodeEnum.TOKEN_VERIFY_ERROR.getMsg());
         }
-        return JSONResult.ok(userInfoVO);
     }
 
 }
