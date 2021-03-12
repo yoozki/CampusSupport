@@ -18,16 +18,16 @@ import java.math.BigDecimal;
 public class UserInfoController {
 
     @GetMapping()
-    public JSONResult getUserInfo(@RequestHeader String Authorization) {
+    public JSONResult getUserInfo(@RequestHeader("Authorization") String token) {
         UserInfoVO userInfoVO = null;
         try {
-            UserTokenDTO userTokenDTO = JwtUtils.parseSubject(Authorization);
-            String openId = userTokenDTO.getOpenId();
-
+            UserTokenDTO userTokenDTO = JwtUtils.parseSubject(token);
+            String avatar = userTokenDTO.getAvatar();
             String nickName = userTokenDTO.getNickName();
+            BigDecimal balance = userTokenDTO.getBalance();
             userInfoVO = new UserInfoVO();
-//            userInfoVO.setAvatar(avatar);
-//            userInfoVO.setBalance(balance);
+            userInfoVO.setAvatar(avatar);
+            userInfoVO.setBalance(balance);
             userInfoVO.setNickName(nickName);
         } catch (Exception e) {
             throw new RuntimeException(e);

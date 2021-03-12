@@ -1,5 +1,10 @@
 package cn.yoozki.campussupport.gateway.filter;
 
+import cn.yoozki.campussupport.common.enums.ErrorCodeEnum;
+import cn.yoozki.campussupport.common.enums.RedisKeyEnum;
+import cn.yoozki.campussupport.common.pojo.UserTokenDTO;
+import cn.yoozki.campussupport.common.util.JSONResult;
+import cn.yoozki.campussupport.common.util.JwtUtils;
 import cn.yoozki.campussupport.gateway.config.ExcludePathConfig;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,7 +47,15 @@ public class AuthorizeGlobalFilter implements GlobalFilter, Ordered {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }
-        if (!stringRedisTemplate.hasKey(token)) {
+        UserTokenDTO userTokenDTO = null;
+        try {
+            userTokenDTO = JwtUtils.parseSubject(token);
+        } catch (Exception e) {
+            response.setStatusCode(HttpStatus.UNAUTHORIZED);
+            return response.setComplete();
+        }
+        String openId = userTokenDTO.getOpenId();
+        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(RedisKeyEnum.USER_TOKEN_KEY.getKeyName() + openId))) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
         }

@@ -1,6 +1,7 @@
 package cn.yoozki.campussupport.common.util;
 
 import cn.yoozki.campussupport.common.pojo.UserTokenDTO;
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtBuilder;
@@ -21,7 +22,7 @@ public class JwtUtils {
     /**
      * 默认有效期 1小时
      */
-    public static final Long JWT_DEFAULT_TTL = 3600000L;
+    public static final Long JWT_DEFAULT_TTL = 3600000L * 24;
 
     public static final String JWT_SECRET_KEY = "y@@zk!";
 
@@ -66,10 +67,15 @@ public class JwtUtils {
                 .getBody();
     }
 
-    public static UserTokenDTO parseSubject(String token) throws Exception {
-        Claims claims = JwtUtils.parseJWT(token);
-        String subject = claims.getSubject();
-        UserTokenDTO userTokenDTO = new ObjectMapper().readValue(subject, UserTokenDTO.class);
+    public static UserTokenDTO parseSubject(String token) {
+        UserTokenDTO userTokenDTO = null;
+        try {
+            Claims claims = JwtUtils.parseJWT(token);
+            String subject = claims.getSubject();
+            userTokenDTO = new ObjectMapper().readValue(subject, UserTokenDTO.class);
+        } catch (Exception e) {
+            return null;
+        }
         return userTokenDTO;
     }
 }

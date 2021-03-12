@@ -13,46 +13,52 @@ import java.util.List;
  * @date 2021/2/11
  */
 @Data
-public class RequireOrderVO {
+public class DemandOrderVO {
 
     /**
-     * 下单用户昵称
+     * 目标(取件)地址
      */
-    private String receiveUserNickname;
+    private String targetAddress;
 
     /**
-     * 下单用户头像
+     * 交付(送达)地址
      */
-    private String receiveUserAvatar;
+    private String deliveryAddress;
 
     /**
      * 订单标题
      */
-    private String orderTitle;
+    private String title;
 
     /**
      * 订单描述
      */
-    private String orderDetail;
+    private String detail;
 
     /**
-     * 付款金额
+     * 代付金额
      */
     private BigDecimal payCost;
 
     /**
-     * 配送金额
+     * 赏金
      */
-    private BigDecimal deliverCost;
+    private BigDecimal reward;
 
     /**
      * 限定时间
      */
-    private Date limitTime;
+    private Date deliveryTime;
 
     /**
-     * 标签名集合
+     * 性别限制(0:不限男女 1:只限男 2:只限女
      */
-    private List<OrderTagVO> orderTagVOList;
+    private Integer sexLimit;
+
+    /**
+     *
+     * 订单标签id
+     */
+    private Integer tagId;
 
 }

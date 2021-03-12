@@ -3,65 +3,89 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="cn.yoozki.campussupport.order.mapper.OrderMapper">
 
-    <resultMap id="RequireOrderVO" type="cn.yoozki.campussupport.order.pojo.vo.RequireOrderVO">
-        <result column="receive_user_nickname" property="receiveUserNickname"/>
-        <result column="receive_user_avatar" property="receiveUserAvatar"/>
-        <result column="order_title" property="orderTitle"/>
-        <result column="order_detail" property="orderDetail"/>
-        <result column="pay_cost" property="payCost"/>
-        <result column="deliver_cost" property="deliverCost"/>
-        <result column="limit_time" property="limitTime"/>
-        <collection property="orderTagVOList" ofType="cn.yoozki.campussupport.order.pojo.vo.OrderTagVO">
-            <id column="tag_id" property="tagId"/>
-            <result column="tag_name" property="tagName"/>
-        </collection>
-    </resultMap>
+<!--    <resultMap id="RequireOrderVO" type="cn.yoozki.campussupport.order.pojo.vo.DemandOrderVO">-->
+<!--        <result column="receive_user_nickname" property="receiveUserNickname"/>-->
+<!--        <result column="receive_user_avatar" property="receiveUserAvatar"/>-->
+<!--        <result column="order_title" property="orderTitle"/>-->
+<!--        <result column="order_detail" property="orderDetail"/>-->
+<!--        <result column="pay_cost" property="payCost"/>-->
+<!--        <result column="deliver_cost" property="deliverCost"/>-->
+<!--        <result column="limit_time" property="limitTime"/>-->
+<!--        <collection property="orderTagVOList" ofType="cn.yoozki.campussupport.order.pojo.vo.OrderTagVO">-->
+<!--            <id column="tag_id" property="tagId"/>-->
+<!--            <result column="tag_name" property="tagName"/>-->
+<!--        </collection>-->
+<!--    </resultMap>-->
 
-    <select id="listRequireOrderVOs" resultMap="RequireOrderVO">
+<!--    <select id="listRequireOrderVOs" resultMap="RequireOrderVO">-->
+<!--        SELECT-->
+<!--        	order_info.receive_user_nickname,-->
+<!--        	order_info.receive_user_avatar,-->
+<!--        	order_info.order_title,-->
+<!--        	order_info.order_detail,-->
+<!--        	order_info.pay_cost,-->
+<!--        	order_info.deliver_cost,-->
+<!--        	order_info.limit_time,-->
+<!--        	order_tag.id as tag_id,-->
+<!--        	order_tag.tag_name-->
+<!--        FROM-->
+<!--        	order_info-->
+<!--        LEFT JOIN-->
+<!--        	order_tag-->
+<!--        ON-->
+<!--        	order_info.order_id = order_tag.order_id-->
+<!--        WHERE-->
+<!--        	order_info.`status` = 1-->
+<!--    </select>-->
+
+<!--    <select id="listRequireOrderVOsByTag" resultMap="RequireOrderVO">-->
+<!--        SELECT-->
+<!--        	order_info.receive_user_nickname,-->
+<!--        	order_info.receive_user_avatar,-->
+<!--        	order_info.order_title,-->
+<!--        	order_info.order_detail,-->
+<!--        	order_info.pay_cost,-->
+<!--        	order_info.deliver_cost,-->
+<!--        	order_info.limit_time,-->
+<!--        	order_tag.id as tag_id,-->
+<!--        	order_tag.tag_name-->
+<!--        FROM-->
+<!--        	order_info-->
+<!--        LEFT JOIN-->
+<!--        	order_tag-->
+<!--        ON-->
+<!--        	order_info.order_id = order_tag.order_id-->
+<!--        WHERE-->
+<!--            order_tag.id in-->
+<!--        <foreach item="tagIdList" collection="list" index="index"  open="(" separator="," close=")">-->
+<!--            #{tagIdList}-->
+<!--        </foreach>-->
+<!--        AND-->
+<!--        	order_info.`status` = 1-->
+<!--    </select>-->
+
+    <select id="listDemandOrderVO" resultType="cn.yoozki.campussupport.order.pojo.vo.DemandOrderVO">
         SELECT
-        	order_info.receive_user_nickname,
-        	order_info.receive_user_avatar,
-        	order_info.order_title,
-        	order_info.order_detail,
-        	order_info.pay_cost,
-        	order_info.deliver_cost,
-        	order_info.limit_time,
-        	order_tag.id as tag_id,
-        	order_tag.tag_name
+            target_address,delivery_address,title,detail,pay_cost,reward,delivery_time,sex_limit,tag_id
         FROM
-        	order_info
-        LEFT JOIN
-        	order_tag
-        ON
-        	order_info.order_id = order_tag.order_id
+            order_info
         WHERE
-        	order_info.`status` = 1
+            status=2
+        AND
+            sex_limit=#{sexLimit}
     </select>
 
-    <select id="listRequireOrderVOsByTag" resultMap="RequireOrderVO">
+    <select id="listTagDemandOrderVO" resultType="cn.yoozki.campussupport.order.pojo.vo.DemandOrderVO">
         SELECT
-        	order_info.receive_user_nickname,
-        	order_info.receive_user_avatar,
-        	order_info.order_title,
-        	order_info.order_detail,
-        	order_info.pay_cost,
-        	order_info.deliver_cost,
-        	order_info.limit_time,
-        	order_tag.id as tag_id,
-        	order_tag.tag_name
+            target_address,delivery_address,title,detail,pay_cost,reward,delivery_time,sex_limit,tag_id
         FROM
-        	order_info
-        LEFT JOIN
-        	order_tag
-        ON
-        	order_info.order_id = order_tag.order_id
+            order_info
         WHERE
-            order_tag.id in
-        <foreach item="tagIdList" collection="list" index="index"  open="(" separator="," close=")">
-            #{tagIdList}
-        </foreach>
+            status=2
         AND
-        	order_info.`status` = 1
+            sex_limit=#{sexLimit}
+        AND
+            tag_id=#{tagId}
     </select>
 
 </mapper>

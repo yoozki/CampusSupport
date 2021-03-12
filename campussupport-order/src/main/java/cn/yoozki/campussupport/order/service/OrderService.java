@@ -1,10 +1,7 @@
 package cn.yoozki.campussupport.order.service;
 
 import cn.yoozki.campussupport.order.pojo.OrderDO;
-import cn.yoozki.campussupport.order.pojo.vo.RequireOrderVO;
-import org.springframework.stereotype.Service;
-
-import java.util.List;
+import cn.yoozki.campussupport.order.pojo.dto.OrderInsertDTO;
 
 /**
  * @author yoozki
@@ -13,18 +10,26 @@ import java.util.List;
 public interface OrderService {
 
     /**
-     * 插入到表order_info
-     * @param orderDO
-     * @param tagIdList 标签集合
+     * 插入订单数据到表中
+     * @param orderInsertDTO
+     * @param receiverOpenId
+     * @return 订单id
      */
-    void insertOrder(OrderDO orderDO, List<Integer> tagIdList);
+    String insertOrder(OrderInsertDTO orderInsertDTO, String receiverOpenId);
 
     /**
-     * 传入当前页 每页显示条数 返回状态为待接单的订单集合
-     * @param current 当前页
-     * @param size 每页显示条数
-     * @return 状态为待接单的订单List
+     * 根据订单号获取订单详情
+     * @param orderId
+     * @return orderDO
      */
-    List<RequireOrderVO> listRequireOrderVOsByTag(long current, long size, List<Integer> tagIdList);
+    OrderDO getOrder(Long orderId);
+
+    /**
+     * 更改订单状态
+     * @param orderDO
+     * @param status
+     * @return
+     */
+    Long updateOrder(OrderDO orderDO, Integer status);
 
 }

@@ -47,6 +47,10 @@ public class JSONResult {
         return new JSONResult(code, msg, null);
     }
 
+    public static JSONResult errorMsg(int code, String msg, Object data) {
+        return new JSONResult(code, msg, data);
+    }
+
     private JSONResult() {
 
     }

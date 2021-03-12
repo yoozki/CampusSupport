@@ -13,9 +13,19 @@ public enum ErrorCodeEnum {
     UNKNOWN_ERROR(10000, "未知系统异常"),
 
     /**
-     * 错误码：10110 Token失效
+     * 错误码：10140 用户学校认证失败
      */
-    TOKEN_VERIFY_ERROR(10110, "Token已失效"),
+    USER_AUTH_ERROR(10140, "用户学校认证失败"),
+
+    /**
+     * 错误码：10141 用户认证信息已被使用
+     */
+    USER_AUTH_USED_ERROR(10141, "用户认证信息已被使用"),
+
+    /**
+     *
+     */
+    USER_AUTH_NOT_EXIST(10141, "用户未认证"),
 
     /**
      * 错误码：10202 账户已被冻结
@@ -23,11 +33,24 @@ public enum ErrorCodeEnum {
     USERNAME_IS_BLOCK(10202, "账户已被冻结"),
 
     /**
+     * 错误码：10300 Token无效
+     */
+    TOKEN_VERIFY_ERROR(10300, "Token无效"),
+
+    /**
      * 错误码：10400 用户请求参数错误
      */
-    USER_REQUEST_PARAM_ERROR(10400, "用户请求参数错误");
+    USER_REQUEST_PARAM_ERROR(10400, "用户请求参数错误"),
 
+    /**
+     * 错误码：10410 订单状态错误
+     */
+    ORDER_STATUS_ERROR(10410, "订单状态错误"),
 
+    /**
+     * 错误码：10601 用户余额不足
+     */
+    USER_BALANCE_INSUFFICIENT(10601, "用户余额不足");
 
     private int code;
     private String msg;

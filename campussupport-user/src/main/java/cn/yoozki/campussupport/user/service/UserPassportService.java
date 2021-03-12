@@ -1,6 +1,7 @@
 package cn.yoozki.campussupport.user.service;
 
 import cn.yoozki.campussupport.user.pojo.UserDO;
+import cn.yoozki.campussupport.user.pojo.dto.UserInfoDTO;
 
 /**
  * @author yoozki
@@ -17,9 +18,17 @@ public interface UserPassportService {
 
     /**
      * 插入用户
-     * @param user
-     * @return
+     * @param userInfoDTO
+     * @param openId
+     * @return userDO
      */
-    UserDO saveUser(UserDO user);
+    UserDO saveUser(UserInfoDTO userInfoDTO, String openId);
+
+    /**
+     * 生成token
+     * @param userDO
+     * @return token
+     */
+    String generateToken(UserDO userDO);
 
 }

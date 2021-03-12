@@ -1,4 +1,4 @@
-package cn.yoozki.campussupport.user.pojo;
+package cn.yoozki.campussupport.order.pojo;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -9,11 +9,11 @@ import java.util.Date;
 
 /**
  * @author yoozki
- * @date 2021/2/11
+ * @date 2021/3/12
  */
 @Data
-@TableName("user_auth")
-public class UserAuthDO {
+@TableName("order_delivery")
+public class OrderDeliveryDO {
 
     /**
      * 主键id
@@ -22,24 +22,29 @@ public class UserAuthDO {
     private Long id;
 
     /**
-     * 用户名
+     * 订单号
      */
-    private String openId;
+    private Long orderId;
 
     /**
-     * 真实姓名
+     * 下单用户openId
      */
-    private String realName;
+    private String receiverOpenId;
 
     /**
-     * 学号
+     * 接单用户openId
      */
-    private Long studentId;
+    private String deliveryOpenId;
 
     /**
-     * 学校名
+     * 确认码
      */
-    private String campus;
+    private Integer code;
+
+    /**
+     * 状态（ 1:已取消 2:正常
+     */
+    private Integer status;
 
     /**
      * 创建时间
@@ -50,6 +55,5 @@ public class UserAuthDO {
      * 更新时间
      */
     private Date gmtModified;
-
 
 }

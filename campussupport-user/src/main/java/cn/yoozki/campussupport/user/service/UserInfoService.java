@@ -15,4 +15,5 @@ public interface UserInfoService {
      */
     UserInfoVO getUserInfo(String openId);
 
+
 }

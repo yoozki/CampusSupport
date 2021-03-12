@@ -1,19 +1,18 @@
 package cn.yoozki.campussupport.order.service.impl;
 
 import cn.yoozki.campussupport.order.mapper.OrderMapper;
-import cn.yoozki.campussupport.order.mapper.OrderTagMapper;
-import cn.yoozki.campussupport.order.mapper.TagMapper;
 import cn.yoozki.campussupport.order.pojo.OrderDO;
-import cn.yoozki.campussupport.order.pojo.OrderTagDO;
-import cn.yoozki.campussupport.order.pojo.TagDO;
-import cn.yoozki.campussupport.order.pojo.vo.RequireOrderVO;
+import cn.yoozki.campussupport.order.pojo.dto.OrderInsertDTO;
 import cn.yoozki.campussupport.order.service.OrderService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
+import java.util.Random;
 
 /**
  * @author yoozki
@@ -25,31 +24,58 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderMapper orderMapper;
 
-    @Autowired
-    private OrderTagMapper orderTagMapper;
-
-    @Autowired
-    private TagMapper tagMapper;
-
     @Override
-    public void insertOrder(OrderDO orderDO, List<Integer> tagIdList) {
-        QueryWrapper<TagDO> tagQueryWrapper = new QueryWrapper<>();
-        tagQueryWrapper.in("id", tagIdList);
-        List<TagDO> tagDOList = tagMapper.selectList(tagQueryWrapper);
-        for (TagDO tagDO : tagDOList) {
-            OrderTagDO orderTagDO = new OrderTagDO();
-            orderTagDO.setOrderId(orderDO.getOrderId());
-            orderTagDO.setTagName(tagDO.getTagName());
-            Date date = new Date();
-            orderTagDO.setGmtCreate(date);
-            orderTagDO.setGmtModified(date);
-            orderTagMapper.insert(orderTagDO);
+    public String insertOrder(OrderInsertDTO orderInsertDTO, String receiverOpenId) {
+        String targetAddress = orderInsertDTO.getTargetAddress();
+        String deliveryAddress = orderInsertDTO.getDeliveryAddress();
+        String title = orderInsertDTO.getTitle();
+        String detail = orderInsertDTO.getDetail();
+        BigDecimal payCost = orderInsertDTO.getPayCost();
+        String receiverName = orderInsertDTO.getReceiverName();
+        String receiverPhone = orderInsertDTO.getReceiverPhone();
+        BigDecimal reward = orderInsertDTO.getReward();
+        Date deliveryTime = orderInsertDTO.getDeliveryTime();
+        Integer sexLimit = orderInsertDTO.getSexLimit();
+        Integer tagId = orderInsertDTO.getTagId();
+        // 封装OrderDO
+        OrderDO orderDO = new OrderDO();
+        orderDO.setReceiverOpenId(receiverOpenId);
+        orderDO.setTargetAddress(targetAddress);
+        orderDO.setDeliveryAddress(deliveryAddress);
+        orderDO.setTitle(title);
+        orderDO.setDetail(detail);
+        orderDO.setPayCost(payCost);
+        orderDO.setReceiverName(receiverName);
+        orderDO.setReceiverPhone(receiverPhone);
+        orderDO.setReward(reward);
+        orderDO.setDeliveryTime(deliveryTime);
+        orderDO.setSexLimit(sexLimit);
+        orderDO.setTagId(tagId);
+        orderDO.setStatus(OrderDO.getUNPAID_STATUS());
+        SimpleDateFormat simpleDateFormat =new SimpleDateFormat("yyMMddHHmmss");
+        String orderId = simpleDateFormat.format(new Date());
+        for (int i = 0; i < 4; i++) {
+            orderId += new Random().nextInt(10);
         }
+        orderDO.setOrderId(Long.parseLong(orderId));
+        Date date = new Date();
+        orderDO.setGmtCreate(date);
+        orderDO.setGmtModified(date);
         orderMapper.insert(orderDO);
+        return orderId;
     }
 
     @Override
-    public List<RequireOrderVO> listRequireOrderVOsByTag(long current, long size, List<Integer> tagIdList) {
-        return orderMapper.listRequireOrderVOsByTag(tagIdList);
+    public OrderDO getOrder(Long orderId) {
+        QueryWrapper<OrderDO> wrapper = new QueryWrapper<OrderDO>().eq("order_id", orderId);
+        return orderMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public Long updateOrder(OrderDO orderDO, Integer status) {
+        UpdateWrapper<OrderDO> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.set("status", status);
+        orderMapper.update(orderDO, updateWrapper);
+        return orderDO.getOrderId();
     }
 }
