@@ -29,9 +29,9 @@ public class UserPassportController {
 
     private static String WECHAT_OPENID_API = "https://api.weixin.qq.com/sns/jscode2session";
 
-    private static String APP_ID = "wx624d6613af2b296f";
+    private static String APP_ID = "";
 
-    private static String APP_SECRET = "6c8f9f4e00e206327c9fb22e0371c360";
+    private static String APP_SECRET = "";
 
     @Autowired
     private UserPassportService userPassportService;
