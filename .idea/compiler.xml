@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="campussupport-auth" />
+        <module name="campussupport-user-api" />
+        <module name="campussupport-common" />
+        <module name="campussupport-forum" />
+        <module name="campussupport-user" />
+        <module name="campussupport-order" />
+        <module name="campussupport-report" />
+        <module name="campussupport-gateway" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="campussupport" target="1.8" />
+      <module name="campussupport-auth" target="1.8" />
+      <module name="campussupport-common" target="1.8" />
+      <module name="campussupport-forum" target="1.8" />
+      <module name="campussupport-gateway" target="1.8" />
+      <module name="campussupport-order" target="1.8" />
+      <module name="campussupport-report" target="1.8" />
+      <module name="campussupport-user" target="1.8" />
+      <module name="campussupport-user-api" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+  <component name="JavacSettings">
+    <option name="ADDITIONAL_OPTIONS_OVERRIDE">
+      <module name="campussupport-user" options="" />
+    </option>
+  </component>
+</project>
