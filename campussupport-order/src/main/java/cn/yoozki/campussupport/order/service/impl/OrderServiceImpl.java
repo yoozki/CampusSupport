@@ -1,12 +1,18 @@
 package cn.yoozki.campussupport.order.service.impl;
 
+import cn.yoozki.campussupport.order.common.OrderConst;
 import cn.yoozki.campussupport.order.mapper.OrderMapper;
+import cn.yoozki.campussupport.order.message.OrderDelayChannel;
 import cn.yoozki.campussupport.order.pojo.OrderDO;
 import cn.yoozki.campussupport.order.pojo.dto.OrderInsertDTO;
 import cn.yoozki.campussupport.order.service.OrderService;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
+import org.apache.rocketmq.common.message.MessageConst;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cloud.stream.annotation.EnableBinding;
+import org.springframework.cloud.stream.annotation.StreamListener;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -19,13 +25,52 @@ import java.util.Random;
  * @date 2021/2/10
  */
 @Service
+@EnableBinding(OrderDelayChannel.class)
 public class OrderServiceImpl implements OrderService {
+
+    @Autowired
+    private OrderDelayChannel orderDelayChannel;
 
     @Autowired
     private OrderMapper orderMapper;
 
     @Override
-    public String insertOrder(OrderInsertDTO orderInsertDTO, String receiverOpenId) {
+    public Long insertOrder(OrderInsertDTO orderInsertDTO, String receiverOpenId) {
+        OrderDO orderDO = packOrderDO(orderInsertDTO, receiverOpenId);
+        orderMapper.insert(orderDO);
+        Long orderId = orderDO.getOrderId();
+        Message<Long> message = MessageBuilder.withPayload(orderId).
+                setHeader(MessageConst.PROPERTY_DELAY_TIME_LEVEL, "4")
+                .build();
+        orderDelayChannel.output().send(message);
+        return orderId;
+    }
+
+    @Override
+    public OrderDO getOrder(Long orderId) {
+        QueryWrapper<OrderDO> wrapper = new QueryWrapper<OrderDO>().eq("order_id", orderId);
+        return orderMapper.selectOne(wrapper);
+    }
+
+    @Override
+    public Long updateOrder(OrderDO orderDO, Integer status) {
+        orderDO.setStatus(status);
+        orderDO.setGmtModified(new Date());
+        orderMapper.updateById(orderDO);
+        return orderDO.getOrderId();
+    }
+
+    @StreamListener(value = OrderDelayChannel.INPUT)
+    public void orderListener(Message<Long> message) {
+        Long orderId = message.getPayload();
+        OrderDO orderDO = getOrder(orderId);
+        Integer status = orderDO.getStatus();
+        if (status.equals(OrderConst.UNPAID_STATUS)) {
+            updateOrder(orderDO, OrderConst.CANCEL_STATUS);
+        }
+    }
+
+    private OrderDO packOrderDO(OrderInsertDTO orderInsertDTO, String receiverOpenId) {
         String targetAddress = orderInsertDTO.getTargetAddress();
         String deliveryAddress = orderInsertDTO.getDeliveryAddress();
         String title = orderInsertDTO.getTitle();
@@ -51,31 +96,17 @@ public class OrderServiceImpl implements OrderService {
         orderDO.setDeliveryTime(deliveryTime);
         orderDO.setSexLimit(sexLimit);
         orderDO.setTagId(tagId);
-        orderDO.setStatus(OrderDO.getUNPAID_STATUS());
+        orderDO.setStatus(OrderConst.UNPAID_STATUS);
         SimpleDateFormat simpleDateFormat =new SimpleDateFormat("yyMMddHHmmss");
-        String orderId = simpleDateFormat.format(new Date());
+        String temp = simpleDateFormat.format(new Date());
         for (int i = 0; i < 4; i++) {
-            orderId += new Random().nextInt(10);
+            temp += new Random().nextInt(10);
         }
-        orderDO.setOrderId(Long.parseLong(orderId));
+        Long orderId = Long.parseLong(temp);
+        orderDO.setOrderId(orderId);
         Date date = new Date();
         orderDO.setGmtCreate(date);
         orderDO.setGmtModified(date);
-        orderMapper.insert(orderDO);
-        return orderId;
-    }
-
-    @Override
-    public OrderDO getOrder(Long orderId) {
-        QueryWrapper<OrderDO> wrapper = new QueryWrapper<OrderDO>().eq("order_id", orderId);
-        return orderMapper.selectOne(wrapper);
-    }
-
-    @Override
-    public Long updateOrder(OrderDO orderDO, Integer status) {
-        UpdateWrapper<OrderDO> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("status", status);
-        orderMapper.update(orderDO, updateWrapper);
-        return orderDO.getOrderId();
+        return orderDO;
     }
 }

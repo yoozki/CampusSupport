@@ -48,6 +48,11 @@ public enum ErrorCodeEnum {
     ORDER_STATUS_ERROR(10410, "订单状态错误"),
 
     /**
+     *
+     */
+    ORDER_CODE_ERROR(10420, "订单确认码错误"),
+
+    /**
      * 错误码：10601 用户余额不足
      */
     USER_BALANCE_INSUFFICIENT(10601, "用户余额不足");

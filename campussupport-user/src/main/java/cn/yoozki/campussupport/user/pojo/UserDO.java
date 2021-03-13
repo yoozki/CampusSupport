@@ -17,24 +17,14 @@ import java.util.Date;
 @TableName("user")
 public class UserDO {
 
-    private static Integer NORMAL_STATUS = 1;
-
     @TableId(type = IdType.AUTO)
     private Long id;
     private String openId;
     private String nickName;
     private String avatar;
-
     private BigDecimal balance;
-
-    /**
-     *  1：正常
-     */
     private Integer status;
     private Date gmtCreate;
     private Date gmtModified;
 
-    public static Integer getNormalStatus() {
-        return NORMAL_STATUS;
-    }
 }

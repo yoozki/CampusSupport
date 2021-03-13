@@ -1,10 +1,12 @@
 package cn.yoozki.campussupport.order.service.impl;
 
+import cn.yoozki.campussupport.order.common.OrderConst;
 import cn.yoozki.campussupport.order.mapper.OrderDeliveryMapper;
 import cn.yoozki.campussupport.order.mapper.OrderMapper;
 import cn.yoozki.campussupport.order.pojo.OrderDO;
 import cn.yoozki.campussupport.order.pojo.OrderDeliveryDO;
 import cn.yoozki.campussupport.order.service.OrderDeliveryService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,7 +27,7 @@ public class OrderDeliveryServiceImpl implements OrderDeliveryService {
     private OrderMapper orderMapper;
 
     @Override
-    public Long insertOrderDelivery(String deliveryOpenId, OrderDO orderDO) {
+    public Long insertOrderDeliveryDO(String deliveryOpenId, OrderDO orderDO) {
         OrderDeliveryDO orderDeliveryDO = new OrderDeliveryDO();
         orderDeliveryDO.setOrderId(orderDO.getOrderId());
         orderDeliveryDO.setDeliveryOpenId(deliveryOpenId);
@@ -37,8 +39,18 @@ public class OrderDeliveryServiceImpl implements OrderDeliveryService {
         orderDeliveryDO.setCode(Integer.parseInt(code.toString()));
         orderDeliveryMapper.insert(orderDeliveryDO);
         UpdateWrapper<OrderDO> updateWrapper = new UpdateWrapper<>();
-        updateWrapper.set("status", OrderDO.getDELIVERY_ORDER_STATUS());
+        updateWrapper.set("status", OrderConst.PROCESS_STATUS);
         orderMapper.update(orderDO, updateWrapper);
         return orderDO.getOrderId();
     }
+
+    @Override
+    public OrderDeliveryDO getOrderDeliveryDO(Long orderId) {
+        QueryWrapper<OrderDeliveryDO> wrapper = new QueryWrapper<>();
+        wrapper.eq("order_id", orderId);
+        return orderDeliveryMapper.selectOne(wrapper);
+    }
+
+
+
 }

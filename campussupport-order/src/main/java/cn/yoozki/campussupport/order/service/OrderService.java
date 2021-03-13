@@ -15,7 +15,7 @@ public interface OrderService {
      * @param receiverOpenId
      * @return 订单id
      */
-    String insertOrder(OrderInsertDTO orderInsertDTO, String receiverOpenId);
+    Long insertOrder(OrderInsertDTO orderInsertDTO, String receiverOpenId);
 
     /**
      * 根据订单号获取订单详情
@@ -31,5 +31,6 @@ public interface OrderService {
      * @return
      */
     Long updateOrder(OrderDO orderDO, Integer status);
+
 
 }

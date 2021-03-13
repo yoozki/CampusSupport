@@ -43,25 +43,10 @@ public class AuthorizeGlobalFilter implements GlobalFilter, Ordered {
         if (isExcludePath(path)) {
             return chain.filter(exchange);
         }
-        if (StringUtils.isBlank(token)) {
+        UserTokenDTO userTokenDTO = JwtUtils.parseSubject(token);
+        if (userTokenDTO == null) {
             response.setStatusCode(HttpStatus.UNAUTHORIZED);
             return response.setComplete();
-        } else {
-            UserTokenDTO userTokenDTO = null;
-            try {
-                userTokenDTO = JwtUtils.parseSubject(token);
-            } catch (Exception e) {
-                response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                return response.setComplete();
-            }
-            if (userTokenDTO != null) {
-                String openId = userTokenDTO.getOpenId();
-                System.out.println(openId);
-                if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(RedisKeyEnum.USER_TOKEN_KEY.getKeyName() + openId))) {
-                    response.setStatusCode(HttpStatus.UNAUTHORIZED);
-                    return response.setComplete();
-                }
-            }
         }
         return chain.filter(exchange);
     }

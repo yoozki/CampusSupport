@@ -5,10 +5,7 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.format.annotation.DateTimeFormat;
 
-import javax.validation.constraints.DecimalMax;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import javax.validation.constraints.*;
 import java.math.BigDecimal;
 import java.util.Date;
 
@@ -47,7 +44,7 @@ public class OrderInsertDTO {
      * 代付款金额
      */
     @NotNull(message = "代付金额不能为空")
-    @DecimalMax(value = "0", message = "代付金额必须大于0")
+    @DecimalMin(value = "0", message = "代付金额必须大于0")
     private BigDecimal payCost;
 
     /**
@@ -66,7 +63,7 @@ public class OrderInsertDTO {
      * 赏金
      */
     @NotNull(message = "赏金不能为空")
-    @DecimalMax(value = "0", message = "赏金金额必须大于0")
+    @DecimalMin(value = "0", message = "赏金金额必须大于0")
     private BigDecimal reward;
 
     /**

@@ -19,30 +19,6 @@ import java.util.Date;
 public class OrderDO {
 
     /**
-     * 已取消状态码
-     */
-    @Getter
-    private static Integer CANCEL_STATUS = 0;
-
-    /**
-     * 待支付状态码
-     */
-    @Getter
-    private static Integer UNPAID_STATUS = 1;
-
-    /**
-     * 待接单状态码
-     */
-    @Getter
-    private static Integer WAIT_ORDER_STATUS = 2;
-
-    /**
-     * 待接单状态码
-     */
-    @Getter
-    private static Integer DELIVERY_ORDER_STATUS = 3;
-
-    /**
      * 主键id
      */
     @TableId(type = IdType.AUTO)

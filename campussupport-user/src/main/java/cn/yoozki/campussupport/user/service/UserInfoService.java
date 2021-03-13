@@ -1,5 +1,6 @@
 package cn.yoozki.campussupport.user.service;
 
+import cn.yoozki.campussupport.user.pojo.UserDO;
 import cn.yoozki.campussupport.user.pojo.vo.UserInfoVO;
 
 /**
@@ -15,5 +16,10 @@ public interface UserInfoService {
      */
     UserInfoVO getUserInfo(String openId);
 
+    /**
+     * 更新用户信息
+     * @param userDO
+     */
+    void updateUserInfo(UserDO userDO);
 
 }

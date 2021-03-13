@@ -42,11 +42,6 @@ public class OrderDeliveryDO {
     private Integer code;
 
     /**
-     * 状态（ 1:已取消 2:正常
-     */
-    private Integer status;
-
-    /**
      * 创建时间
      */
     private Date gmtCreate;

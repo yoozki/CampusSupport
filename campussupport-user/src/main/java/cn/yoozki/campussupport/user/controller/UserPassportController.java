@@ -6,6 +6,7 @@ import cn.yoozki.campussupport.common.util.JwtUtils;
 import cn.yoozki.campussupport.user.pojo.UserDO;
 import cn.yoozki.campussupport.user.pojo.dto.UserInfoDTO;
 import cn.yoozki.campussupport.user.pojo.dto.WechatDTO;
+import cn.yoozki.campussupport.user.service.UserInfoService;
 import cn.yoozki.campussupport.user.service.UserPassportService;
 import cn.yoozki.campussupport.common.enums.ErrorCodeEnum;
 import cn.yoozki.campussupport.common.util.JSONResult;
@@ -34,13 +35,14 @@ public class UserPassportController {
     private static String APP_SECRET = "95f2059b264d0a4ef91682bc55ff4f1b";
 
     @Autowired
+    private RestTemplate restTemplate;
+
+    @Autowired
     private UserPassportService userPassportService;
 
     @Autowired
-    private StringRedisTemplate stringRedisTemplate;
+    private UserInfoService userInfoService;
 
-    @Autowired
-    private RestTemplate restTemplate;
 
     @PostMapping("/token")
     public JSONResult login(@RequestBody UserInfoDTO userInfoDTO) {
@@ -56,42 +58,16 @@ public class UserPassportController {
         if (userByOpenId == null) {
             UserDO userDO = userPassportService.saveUser(userInfoDTO, openId);
             String token = userPassportService.generateToken(userDO);
-            stringRedisTemplate.opsForValue().set(RedisKeyEnum.USER_TOKEN_KEY.getKeyName() + openId, token, 1, TimeUnit.DAYS);
             return JSONResult.ok(token);
         }
+        String avatar = userInfoDTO.getAvatar();
+        String nickName = userInfoDTO.getNickName();
+        userByOpenId.setAvatar(avatar);
+        userByOpenId.setNickName(nickName);
+        userInfoService.updateUserInfo(userByOpenId);
         String token = userPassportService.generateToken(userByOpenId);
-        stringRedisTemplate.opsForValue().set(RedisKeyEnum.USER_TOKEN_KEY.getKeyName() + openId, token, 1, TimeUnit.DAYS);
         System.out.println(token);
         return JSONResult.ok(token);
-    }
-
-    @PostMapping("/verify/token")
-    public JSONResult verifyToken(@RequestHeader("Authorization") String token) {
-        if (StringUtils.isBlank(token)) {
-            return JSONResult.errorMsg(ErrorCodeEnum.USER_REQUEST_PARAM_ERROR.getCode(), ErrorCodeEnum.USER_REQUEST_PARAM_ERROR.getMsg());
-        }
-        UserTokenDTO userTokenDTO = null;
-        try {
-            userTokenDTO = JwtUtils.parseSubject(token);
-        } catch (Exception e) {
-            return JSONResult.errorMsg(ErrorCodeEnum.TOKEN_VERIFY_ERROR.getCode(), ErrorCodeEnum.TOKEN_VERIFY_ERROR.getMsg());
-        }
-        String openId = userTokenDTO.getOpenId();
-        if (Boolean.FALSE.equals(stringRedisTemplate.hasKey(RedisKeyEnum.USER_TOKEN_KEY.getKeyName() + openId))) {
-            return JSONResult.errorMsg(ErrorCodeEnum.TOKEN_VERIFY_ERROR.getCode(), ErrorCodeEnum.TOKEN_VERIFY_ERROR.getMsg());
-        }
-        return JSONResult.ok();
-    }
-
-    @DeleteMapping("/token")
-    public JSONResult logout(@RequestHeader("Authorization") String token) {
-        UserTokenDTO userTokenDTO = JwtUtils.parseSubject(token);
-        if (userTokenDTO == null) {
-            return JSONResult.errorMsg(ErrorCodeEnum.TOKEN_VERIFY_ERROR.getCode(), ErrorCodeEnum.TOKEN_VERIFY_ERROR.getMsg());
-        }
-        String openId = userTokenDTO.getOpenId();
-        stringRedisTemplate.delete(RedisKeyEnum.USER_TOKEN_KEY + openId);
-        return JSONResult.ok();
     }
 
     private String getOpenId(String code) {

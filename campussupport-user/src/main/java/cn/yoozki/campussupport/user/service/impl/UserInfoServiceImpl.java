@@ -23,6 +23,18 @@ public class UserInfoServiceImpl implements UserInfoService {
         QueryWrapper<UserDO> wrapper = new QueryWrapper<>();
         wrapper.eq("open_id", openId);
         UserDO userDO = userMapper.selectOne(wrapper);
-        return null;
+        if (userDO == null) {
+            return null;
+        }
+        UserInfoVO userInfoVO = new UserInfoVO();
+        userInfoVO.setNickName(userDO.getNickName());
+        userInfoVO.setBalance(userDO.getBalance());
+        userInfoVO.setAvatar(userDO.getAvatar());
+        return userInfoVO;
+    }
+
+    @Override
+    public void updateUserInfo(UserDO userDO) {
+        userMapper.updateById(userDO);
     }
 }

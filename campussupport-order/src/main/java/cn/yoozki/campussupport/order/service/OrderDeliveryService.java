@@ -1,6 +1,7 @@
 package cn.yoozki.campussupport.order.service;
 
 import cn.yoozki.campussupport.order.pojo.OrderDO;
+import cn.yoozki.campussupport.order.pojo.OrderDeliveryDO;
 
 /**
  * @author yoozki
@@ -14,6 +15,13 @@ public interface OrderDeliveryService {
      * @param orderDO
      * @return
      */
-    Long insertOrderDelivery(String deliveryOpenId, OrderDO orderDO);
+    Long insertOrderDeliveryDO(String deliveryOpenId, OrderDO orderDO);
+
+    /**
+     * 根据 orderId 查询 OrderDeliveryDO 对象
+     * @param orderId
+     * @return
+     */
+    OrderDeliveryDO getOrderDeliveryDO(Long orderId);
 
 }

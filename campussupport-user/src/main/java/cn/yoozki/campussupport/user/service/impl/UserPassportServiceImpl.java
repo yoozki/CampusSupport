@@ -2,6 +2,7 @@ package cn.yoozki.campussupport.user.service.impl;
 
 import cn.yoozki.campussupport.common.pojo.UserTokenDTO;
 import cn.yoozki.campussupport.common.util.JwtUtils;
+import cn.yoozki.campussupport.user.common.UserConst;
 import cn.yoozki.campussupport.user.mapper.UserMapper;
 import cn.yoozki.campussupport.user.pojo.UserDO;
 import cn.yoozki.campussupport.user.pojo.dto.UserInfoDTO;
@@ -41,7 +42,7 @@ public class UserPassportServiceImpl implements UserPassportService {
         UserDO userDO = new UserDO();
         userDO.setAvatar(avatar);
         userDO.setNickName(nickName);
-        userDO.setStatus(UserDO.getNormalStatus());
+        userDO.setStatus(UserConst.NORMAL_STATUS);
         userDO.setOpenId(openId);
         userDO.setBalance(new BigDecimal("0.00"));
         Date date = new Date();
